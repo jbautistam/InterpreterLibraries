@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32328.378
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibInterpreter.Lexer", "src\LibInterpreter.Lexer\LibInterpreter.Lexer.csproj", "{A5587501-09CC-4EBE-98B2-0ADDCC71EF16}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibInterpreter.Models", "src\LibInterpreter.Models\LibInterpreter.Models.csproj", "{1E101C6F-28FF-4B84-91D6-ED1454C66A25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibInterpreter.Interpreter", "src\LibInterpreter.Interpreter\LibInterpreter.Interpreter.csproj", "{4BE42472-2C98-4004-9A1D-053A229F6AC2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test_Lexer", "tests\Test_Lexer\Test_Lexer.csproj", "{59101C50-7959-4EAF-9F74-4C868DFDE88C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibInterpreter.Evaluator", "src\LibInterpreter.Evaluator\LibInterpreter.Evaluator.csproj", "{F2E22ACB-CA8D-420D-B591-8D0EFB7B466F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B731C7B4-7FD0-4A55-9B05-F5394296515F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5587501-09CC-4EBE-98B2-0ADDCC71EF16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5587501-09CC-4EBE-98B2-0ADDCC71EF16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5587501-09CC-4EBE-98B2-0ADDCC71EF16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5587501-09CC-4EBE-98B2-0ADDCC71EF16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E101C6F-28FF-4B84-91D6-ED1454C66A25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E101C6F-28FF-4B84-91D6-ED1454C66A25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E101C6F-28FF-4B84-91D6-ED1454C66A25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E101C6F-28FF-4B84-91D6-ED1454C66A25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BE42472-2C98-4004-9A1D-053A229F6AC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BE42472-2C98-4004-9A1D-053A229F6AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BE42472-2C98-4004-9A1D-053A229F6AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BE42472-2C98-4004-9A1D-053A229F6AC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59101C50-7959-4EAF-9F74-4C868DFDE88C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59101C50-7959-4EAF-9F74-4C868DFDE88C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59101C50-7959-4EAF-9F74-4C868DFDE88C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59101C50-7959-4EAF-9F74-4C868DFDE88C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2E22ACB-CA8D-420D-B591-8D0EFB7B466F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2E22ACB-CA8D-420D-B591-8D0EFB7B466F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2E22ACB-CA8D-420D-B591-8D0EFB7B466F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2E22ACB-CA8D-420D-B591-8D0EFB7B466F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{59101C50-7959-4EAF-9F74-4C868DFDE88C} = {B731C7B4-7FD0-4A55-9B05-F5394296515F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7725508D-BA27-4C02-89E2-9EF0E4929E76}
+	EndGlobalSection
+EndGlobal

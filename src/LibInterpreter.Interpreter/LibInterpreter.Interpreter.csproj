@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <Nullable>enable</Nullable>
+    <RootNamespace>Bau.Libraries.LibInterpreter.Interpreter</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Processor\**" />
+    <EmbeddedResource Remove="Processor\**" />
+    <None Remove="Processor\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LibInterpreter.Models\LibInterpreter.Models.csproj" />
+  </ItemGroup>
+
+</Project>
