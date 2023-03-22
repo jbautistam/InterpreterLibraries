@@ -35,7 +35,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 			// Añade los argumentos al contexto
 			if (arguments is not null)
 				foreach (KeyValuePair<string, object?> argument in arguments)
-					Context.Actual.VariablesTable.Add(new VariableModel(argument.Key, argument.Value));
+					Context.Actual.VariablesTable.Add(new VariableModel(argument.Key, SymbolModel.SymbolType.Unknown, argument.Value));
 		}
 
 		/// <summary>
@@ -117,7 +117,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 		/// </summary>
 		private async Task ExecuteDeclareAsync(SentenceDeclare sentence, CancellationToken cancellationToken)
 		{
-			VariableModel variable = new VariableModel(sentence.Variable.Name, sentence.Variable.Type);
+			VariableModel variable = new(sentence.Variable.Name, sentence.Variable.Type, null);
 
 				// Si es un tipo conocido, añade la variable al contexto
 				if (variable.Type == SymbolModel.SymbolType.Unknown)
@@ -188,8 +188,8 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 
 						if (index.Type != sentence.Variable.Type)
 							AddError($"The start expression result at loop for is not type {sentence.Variable.Type}. Variable: {sentence.Variable.Name}");
-						else if (index.Type != SymbolModel.SymbolType.Numeric)
-							AddError($"The value of start at for loop must be numeric. Variable: {sentence.Variable.Name}");
+						else if (index.Type != SymbolModel.SymbolType.Numeric && index.Type != SymbolModel.SymbolType.Date)
+							AddError($"The value of start at for loop must be numeric or date. Variable: {sentence.Variable.Name}");
 						else
 						{
 							VariableModel end = await GetVariableValueAsync($"EndIndex_Context_{Context.Actual.ScopeIndex}", sentence.EndExpression, cancellationToken);
@@ -201,7 +201,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 										AddError($"The types of start and end variable at for loop are distinct. Variable: {sentence.Variable.Name}");
 									else
 									{
-										VariableModel step = new VariableModel($"StepIndex_Context_{Context.Actual.ScopeIndex}", 1);
+										VariableModel step = new($"StepIndex_Context_{Context.Actual.ScopeIndex}", SymbolModel.SymbolType.Numeric, 1);
 
 											// Asigna el valor a la expresión si no tenía
 											if (sentence.StepExpression.Count > 0)
@@ -209,8 +209,8 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 											// Comprueba que el paso sea numérico
 											if (!Stopped)
 											{
-												if (index.Type != step.Type)
-													AddError($"The step type is not numeric at for loop. Variable: {sentence.Variable.Name}");
+												if (!CanExecuteStep(index, step))
+													AddError($"The step type is not compatible with for variable. Variable: {sentence.Variable.Name}");
 												else // Ejecuta el bucle for
 													await ExecuteForLoopAsync(sentence, index, end, step, cancellationToken);
 											}
@@ -219,7 +219,17 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 						}
 				}
 			}
+
+			// Comprueba que se pueda incrementar el paso: si el índice es fecha y el intervalo es fecha o númerico (predeterminado un día)
+			// o el índice y el paso tienen el mismo tipo
+			bool CanExecuteStep(VariableModel index, VariableModel step)
+			{
+				return (index.Type == SymbolModel.SymbolType.Date && 
+							(step.Type == SymbolModel.SymbolType.Numeric || step.Type == SymbolModel.SymbolType.Date)) ||
+					   index.Type == step.Type;
+			}
 		}
+
 
 		/// <summary>
 		///		Ejecuta el contenido de un bucle for
@@ -257,10 +267,8 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 		/// </summary>
 		private bool IsPositive(VariableModel variable)
 		{
-			VariableModel compareWith = new VariableModel($"Variable_{Guid.NewGuid().ToString()}", SymbolModel.SymbolType.Numeric);
+			VariableModel compareWith = new($"Variable_{Guid.NewGuid().ToString()}", SymbolModel.SymbolType.Numeric, 0);
 
-				// Asigna el valor
-				compareWith.Value = 0;
 				// Comprueba si la variable es positiva
 				return variable.IsGreaterThan(compareWith);
 		}
@@ -284,15 +292,15 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 			if (expressions.Count > 0)
 			{
 				VariableModel? result = await ExecuteExpressionAsync(expressions, cancellationToken);
-				VariableModel variable = new VariableModel(name, result?.Type);
 
-					// Cambia el nombre del resultado de la expresión
-					variable.Value = result?.Value;
-					// Devuelve la variable
-					return variable;
+					// Asigna el nuevo tipo
+					if (result is null)
+						throw new Exceptions.InterpreterException($"Error when compute expression for {name}");
+					else
+						return new VariableModel(name, result.Type, result.Value);
 			}
 			else
-				return new VariableModel(name, SymbolModel.SymbolType.Unknown);
+				return new VariableModel(name, SymbolModel.SymbolType.Unknown, null);
 		}
 
 		/// <summary>
@@ -338,7 +346,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 
 					if (result != null)
 					{
-						if (result.Type != SymbolModel.SymbolType.Boolean || !(result.Value is bool resultLogical))
+						if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 							AddError("If condition result is not a logical value");
 						else
 						{
@@ -371,7 +379,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 
 							if (result != null)
 							{
-								if (result.Type != SymbolModel.SymbolType.Boolean || !(result.Value is bool resultLogical))
+								if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 									AddError("While condition result is not a logical value");
 								else if (resultLogical)
 									await ExecuteWithContextAsync(sentence.Sentences, cancellationToken);
@@ -405,7 +413,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 							// Comprueba el resultado
 							if (result != null)
 							{
-								if (result.Type != SymbolModel.SymbolType.Boolean || !(result.Value is bool resultLogical))
+								if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 									AddError("Do while condition result is not a logical value");
 								else if (!resultLogical)
 									end = true;
@@ -470,7 +478,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 		/// <summary>
 		///		Ejecuta una función
 		/// </summary>
-		private async Task<VariableModel?> ExecuteFunctionAsync(BaseFunctionModel function, System.Collections.Generic.List<ExpressionsCollection> arguments, 
+		private async Task<VariableModel?> ExecuteFunctionAsync(BaseFunctionModel function, List<ExpressionsCollection> arguments, 
 															    bool waitReturn, CancellationToken cancellationToken)
 		{
 			VariableModel? result = null;
@@ -604,7 +612,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter
 		/// <summary>
 		///		Contexto de ejecución
 		/// </summary>
-		protected ContextStackModel Context { get; } = new ContextStackModel();
+		protected ContextStackModel Context { get; } = new();
 
 		/// <summary>
 		///		Indica si se ha detenido el programa por una excepción

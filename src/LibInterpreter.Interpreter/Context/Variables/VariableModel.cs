@@ -37,17 +37,33 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Variables
 			Year
 		}
 
-		public VariableModel(string name, SymbolModel.SymbolType type)
+		public VariableModel(string name, SymbolModel.SymbolType type, object? value)
 		{
+			// Asigna los datos
 			Name = name;
 			Type = type;
+			Value = value;
+			// Asigna el tipo teniendo en cuenta el valor del objeto
+			if (type == SymbolModel.SymbolType.Unknown && value is not null)
+				Type = InferType(value);
+			// Asigna el valor predeterminado
+			if (value is null)
+				AssignDefault();
 		}
 
-		public VariableModel(string name, object? value)
+		/// <summary>
+		///		Infiere el tipo de variable a partir del tipo de valor
+		/// </summary>
+		private SymbolModel.SymbolType InferType(object value)
 		{
-			Name = name;
-			Type = GetVariableType(value);
-			Value = value;
+			return value switch
+						{
+							decimal or float or double or int or long or short or byte => SymbolModel.SymbolType.Numeric,
+							string => SymbolModel.SymbolType.String,
+							DateTime or DateOnly or TimeOnly => SymbolModel.SymbolType.Date,
+							bool => SymbolModel.SymbolType.Boolean,
+							_ => SymbolModel.SymbolType.Object
+						};
 		}
 
 		/// <summary>
@@ -334,21 +350,6 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Variables
 		}
 
 		/// <summary>
-		///		Obtiene el tipo de variable a partir de un objeto
-		/// </summary>
-		private SymbolModel.SymbolType GetVariableType(object? value)
-		{
-			return value switch
-			{
-				null => SymbolModel.SymbolType.Unknown,
-				bool => SymbolModel.SymbolType.Boolean,
-				string => SymbolModel.SymbolType.String,
-				DateTime => SymbolModel.SymbolType.Date,
-				_ => SymbolModel.SymbolType.Numeric,
-			};
-		}
-
-		/// <summary>
 		///		Convierte un objeto a numérico
 		/// </summary>
 		private double ConvertToNumeric(VariableModel variable)
@@ -369,15 +370,10 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Variables
 		/// </summary>
 		private DateTime? ConvertToDate(VariableModel variable)
 		{
-			string value = ConvertToString(variable);
-
-				// Interpreta la fecha como una cadena de tipo yyyy-MM-dd HH:mm:ss
-				if (!string.IsNullOrWhiteSpace(value) &&
-						DateTime.TryParseExact(value, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat, 
-											   System.Globalization.DateTimeStyles.AssumeUniversal, out DateTime result))
-					return result;
-				else
-					return null;
+			if (variable.Value is DateTime date)
+				return date;
+			else
+				return null;
 		}
 
 		/// <summary>

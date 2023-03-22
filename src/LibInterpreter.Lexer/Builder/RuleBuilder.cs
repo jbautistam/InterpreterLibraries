@@ -89,14 +89,11 @@ namespace Bau.Libraries.LibInterpreter.Lexer.Builder
 		/// <summary>
 		///		Genera las reglas
 		/// </summary>
-		public List<RuleBase> Build()
-		{
-			return Rules;
-		}
+		public List<RuleBase> Build() => Rules;
 
 		/// <summary>
 		///		Reglas generadas
 		/// </summary>
-		private List<RuleBase> Rules { get; } = new List<RuleBase>();
+		private List<RuleBase> Rules { get; } = new();
 	}
 }

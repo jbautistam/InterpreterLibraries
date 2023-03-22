@@ -23,7 +23,9 @@ namespace Bau.Libraries.LibInterpreter.Models.Symbols
 			/// <summary>Valor lógico</summary>
 			Boolean,
 			/// <summary>Valor de fecha</summary>
-			Date
+			Date,
+			/// <summary>Objeto</summary>
+			Object
 		}
 
 		/// <summary>
