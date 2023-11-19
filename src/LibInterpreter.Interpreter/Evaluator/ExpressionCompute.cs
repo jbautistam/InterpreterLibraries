@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-using Bau.Libraries.LibInterpreter.Interpreter.Context;
+﻿using Bau.Libraries.LibInterpreter.Interpreter.Context;
 using Bau.Libraries.LibInterpreter.Interpreter.Context.Variables;
 using Bau.Libraries.LibInterpreter.Models.Expressions;
 using Bau.Libraries.LibInterpreter.Models.Symbols;

@@ -1,36 +1,33 @@
-﻿using System;
+﻿namespace Bau.Libraries.LibInterpreter.Models.Expressions;
 
-namespace Bau.Libraries.LibInterpreter.Models.Expressions
+/// <summary>
+///		Expresión que identifica un paréntesis de apertura o cierre
+/// </summary>
+public class ExpressionParenthesis : ExpressionBase
 {
+	public ExpressionParenthesis(bool open)
+	{
+		Open = open;
+	}
+
 	/// <summary>
-	///		Expresión que identifica un paréntesis de apertura o cierre
+	///		Clona la expresión
 	/// </summary>
-    public class ExpressionParenthesis : ExpressionBase
-    {
-		public ExpressionParenthesis(bool open)
-		{
-			Open = open;
-		}
+	public override ExpressionBase Clone()
+	{
+		return new ExpressionParenthesis(Open);
+	}
 
-		/// <summary>
-		///		Clona la expresión
-		/// </summary>
-		public override ExpressionBase Clone()
-		{
-			return new ExpressionParenthesis(Open);
-		}
+	/// <summary>
+	///		Obtiene la información de depuración
+	/// </summary>
+	public override string GetDebugInfo()
+	{
+		return $"[{(Open ? '(' : ')')}]";
+	}
 
-		/// <summary>
-		///		Obtiene la información de depuración
-		/// </summary>
-		public override string GetDebugInfo()
-		{
-			return $"[{(Open ? '(' : ')')}]";
-		}
-
-		/// <summary>
-		///		Indica si es un paréntesis de apertura
-		/// </summary>
-		public bool Open { get; }
-    }
+	/// <summary>
+	///		Indica si es un paréntesis de apertura
+	/// </summary>
+	public bool Open { get; }
 }

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using Bau.Libraries.LibInterpreter.Models.Symbols;
+﻿using Bau.Libraries.LibInterpreter.Models.Symbols;
 
 namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Variables;
 
