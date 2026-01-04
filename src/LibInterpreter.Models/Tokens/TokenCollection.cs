@@ -14,11 +14,16 @@ public class TokenCollection : List<TokenBase>
 	}
 
 	/// <summary>
-	///		Imprime las líneas de depuración
+	///		Crea un texto de depuración
 	/// </summary>
-	public void Debug()
+	public string GetDebugInfo()
 	{
-		foreach (TokenBase token in this)
-			System.Diagnostics.Debug.WriteLine(token.GetDebugInfo());
+		System.Text.StringBuilder builder = new();
+
+			// Añade la información a la cadena
+			foreach (TokenBase token in this)
+				builder.AppendLine(token.GetDebugInfo());
+			// Devuelve la cadena
+			return builder.ToString();
 	}
 }

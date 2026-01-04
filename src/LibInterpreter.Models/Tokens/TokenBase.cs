@@ -17,7 +17,7 @@ public class TokenBase
 	/// <summary>
 	///		Obtiene la información de depuración del token
 	/// </summary>
-	public virtual string GetDebugInfo() => $"{Type} (R {Row} - C {Column} - I {Indent}) : #{Value}#";
+	public virtual string GetDebugInfo() => $"Type {Type} (R {Row} - C {Column} - I {Indent}) : #{Value}#";
 
 	/// <summary>
 	///		Tipo del token

@@ -13,7 +13,7 @@ public class RuleBuilder
 	public RuleBuilder WithDelimited(string token, string separator)
 	{
 		// Añade una regla delimitada
-		Rules.Add(new RuleDelimited(token, new[] { separator }, new[] { separator }, false, false, false, false, false));
+		Rules.Add(new RuleDelimited(token, [ separator ], [ separator ], false, false, false, false, false));
 		// Devuelve el generador
 		return this;
 	}
@@ -24,7 +24,7 @@ public class RuleBuilder
 	public RuleBuilder WithDelimited(string token, string start, string end)
 	{
 		// Añade una regla delimitada
-		Rules.Add(new RuleDelimited(token, new[] { start }, new[] { end }, false, false, false, false, false));
+		Rules.Add(new RuleDelimited(token, [ start ], [ end ], false, false, false, false, false));
 		// Devuelve el generador
 		return this;
 	}
@@ -54,33 +54,32 @@ public class RuleBuilder
 	/// <summary>
 	///		Añade una regla predefinida para números
 	/// </summary>
-	public RuleBuilder WithDefaultNumbers(string token)
-	{
-		return WithPattern(token, "9", "9.");
-	}
+	public RuleBuilder WithDefaultNumbers(string token) => WithPattern(token, "9", "9.");
 
 	/// <summary>
-	///		Añade una regla para los operadores matemáticos (paréntesis de apertura y cierra, +, -, *, / y %)
+	///		Añade una regla para los operadores matemáticos (paréntesis de apertura y cierre, +, -, *, /, = y %)
 	/// </summary>
-	public RuleBuilder WithDefaultMathOperators(string token)
-	{
-		return WithWords(token, "(", ")", "+", "-", "*", "/", "%");
-	}
+	public RuleBuilder WithDefaultMathOperators(string token) => WithWords(token, "(", ")", "+", "-", "*", "/", "%", "=");
 
 	/// <summary>
 	///		Añade una regla para los operadores relacionales (||, &&, !)
 	/// </summary>
-	public RuleBuilder WithDefaultRelationalOperators(string token)
-	{
-		return WithWords(token, "||", "&&", "!");
-	}
+	public RuleBuilder WithDefaultRelationalOperators(string token) => WithWords(token, "||", "&&", "!");
 
 	/// <summary>
 	///		Añade una regla para los operadores lógicos (<, >, >=, <=, ==, !=)
 	/// </summary
-	public RuleBuilder WithDefaultLogicalOperators(string token)
+	public RuleBuilder WithDefaultLogicalOperators(string token) => WithWords(token, ">=", "<=", "==", "<", ">", "!=");
+
+	/// <summary>
+	///		Añade una regla para los patrones desde un inicio a un fin de línea (por ejemplo, ## para comentarios hasta el final de línea)
+	/// </summary>
+	public RuleBuilder WithToEnd(string token, string start)
 	{
-		return WithWords(token, "<", ">", ">=", "<=", "==", "!=");
+		// Añade el patrón
+		Rules.Add(new RuleDelimited(token, start, string.Empty, true, false, true, false, true));
+		// Devuelve el generador
+		return this;
 	}
 
 	/// <summary>
@@ -91,5 +90,5 @@ public class RuleBuilder
 	/// <summary>
 	///		Reglas generadas
 	/// </summary>
-	private List<RuleBase> Rules { get; } = new();
+	private List<RuleBase> Rules { get; } = [];
 }

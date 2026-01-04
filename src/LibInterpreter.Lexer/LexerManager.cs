@@ -10,13 +10,10 @@ public class LexerManager
 	/// <summary>
 	///		Interpreta un texto
 	/// </summary>
-	public TokenCollection Parse(string source)
-	{
-		return new Parser.StringTokenSeparator(source, Rules).Parse();
-	}
+	public TokenCollection Parse(string source) => new Parser.StringTokenSeparator(source, Rules).Parse();
 
 	/// <summary>
 	///		Reglas para obtener tokens
 	/// </summary>
-	public Rules.RuleCollection Rules { get; } = new();
+	public Rules.RuleCollection Rules { get; } = [];
 }

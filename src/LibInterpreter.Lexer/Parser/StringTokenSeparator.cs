@@ -19,7 +19,7 @@ internal class StringTokenSeparator
 	/// </summary>
 	internal TokenCollection Parse()
 	{
-		TokenCollection tokens = new TokenCollection();
+		TokenCollection tokens = [];
 
 			// Interpreta la cadena
 			while (!CharSeparator.IsEof)
@@ -61,7 +61,7 @@ internal class StringTokenSeparator
 						tokens[tokens.Count - 1].Indent = CharSeparator.GetIndentFrom(firstCharacter);
 					}
 			}
-			// Devuelve la colección de palabras
+			// Devuelve la colección de tokens
 			return tokens;
 	}
 
@@ -71,7 +71,7 @@ internal class StringTokenSeparator
 	private void CheckRuleWordFixed(RuleWordFixed rule, TokenCollection tokens, ref bool found)
 	{
 		foreach (string word in rule.Words)
-			if (!found && CharSeparator.LookAtChar(word.Length).Equals(word, StringComparison.CurrentCultureIgnoreCase))
+			if (!string.IsNullOrWhiteSpace(word) && !found && CharSeparator.LookAtChar(word.Length).Equals(word, StringComparison.CurrentCultureIgnoreCase))
 			{ 
 				// Añade el token
 				tokens.Add(GetToken(rule, word, true));
@@ -119,7 +119,7 @@ internal class StringTokenSeparator
 	/// </summary>
 	private TokenBase GetToken(RuleBase rule, string value, bool extractChars)
 	{
-		TokenBase token = new TokenBase(rule.TokenType, CharSeparator.Row, CharSeparator.Column, value);
+		TokenBase token = new(rule.TokenType, CharSeparator.Row, CharSeparator.Column, value);
 
 			// Quita los caracteres del token
 			if (extractChars)
@@ -164,7 +164,7 @@ internal class StringTokenSeparator
 	/// </summary>
 	private TokenBase ReadWord(string startRule, RuleDelimited rule)
 	{
-		TokenBase token = new TokenBase(rule.TokenType, CharSeparator.Row, CharSeparator.Column, "");
+		TokenBase token = new(rule.TokenType, CharSeparator.Row, CharSeparator.Column, "");
 
 			// Obtiene la cadena de inicio
 			if (rule.IncludeStart)
@@ -209,10 +209,7 @@ internal class StringTokenSeparator
 	/// <summary>
 	///		Lee un token hasta encontrar un espacio
 	/// </summary>
-	private TokenBase ReadWordToSpaces()
-	{
-		return new TokenBase(string.Empty, CharSeparator.Row, CharSeparator.Column, CharSeparator.GetCharsToSpace());
-	}
+	private TokenBase ReadWordToSpaces() => new TokenBase(string.Empty, CharSeparator.Row, CharSeparator.Column, CharSeparator.GetCharsToSpace());
 
 	/// <summary>
 	///		Clase para obtención de caracteres

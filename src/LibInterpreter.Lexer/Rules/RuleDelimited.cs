@@ -7,7 +7,7 @@ public class RuleDelimited : RuleBase
 {
 	public RuleDelimited(string tokenType, string start, string end,
 					     bool toEndLine, bool toFirstSpace, bool includeStart, bool includeEnd, bool mustTrim) 
-			: this(tokenType, new string[] { start }, new string[] { end }, 
+			: this(tokenType, [ start ], [ end ], 
 				   toEndLine, toFirstSpace, includeStart, includeEnd, mustTrim)
 	{
 	}
