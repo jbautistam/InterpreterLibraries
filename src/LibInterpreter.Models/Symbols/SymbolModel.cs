@@ -27,9 +27,14 @@ public class SymbolModel
 	}
 
 	/// <summary>
+	///		Obtiene la cadena de depuración
+	/// </summary>
+	public string GetDebugInfo() => $"{Name} {Type.ToString()}";
+
+	/// <summary>
 	///		Nombre del símbolo
 	/// </summary>
-	public string Name { get; set; }
+	public string Name { get; set; } = default!;
 
 	/// <summary>
 	///		Tipo de símbolo

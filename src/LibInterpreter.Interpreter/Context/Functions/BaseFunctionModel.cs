@@ -30,5 +30,5 @@ public abstract class BaseFunctionModel
 	/// <summary>
 	///		Argumentos de la función
 	/// </summary>
-	public List<SymbolModel> Arguments { get; } = new List<SymbolModel>();
+	public List<SymbolModel> Arguments { get; } = [];
 }

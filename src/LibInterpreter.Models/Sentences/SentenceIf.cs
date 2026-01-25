@@ -6,22 +6,35 @@
 public class SentenceIf : SentenceBase
 {
 	/// <summary>
-	///		Condición (cuando aún no se han interpretado las expresiones)
+	///		Genera la cadena de depuración
 	/// </summary>
-	public string Condition { get; set; }
+	public override string GetDebugInfo(int indent) 
+	{
+		string debug = AddDebug(indent, "If");
+
+			// Añade las condiciones
+			debug += AddDebug(indent + 1, ConditionExpression.GetDebugInfo(indent + 1));
+			// Añade las sentencias then / else
+			debug += AddDebug(indent + 1, "Then");
+			debug += SentencesThen.GetDebugInfo(indent + 2);
+			debug += AddDebug(indent + 1, "Else");
+			debug += SentencesElse.GetDebugInfo(indent + 2);
+			// Devuelve la cadena de depuración
+			return debug;
+	}
 
 	/// <summary>
 	///		Condición
 	/// </summary>
-	public Expressions.ExpressionsCollection ConditionExpression { get; } = new Expressions.ExpressionsCollection();
+	public Expressions.ExpressionsCollection ConditionExpression { get; set; } = [];
 
 	/// <summary>
 	///		Sentencias a ejecutar si el resultado de la condición es verdadero
 	/// </summary>
-	public SentenceCollection SentencesThen { get; } = new SentenceCollection();
+	public SentenceCollection SentencesThen { get; } = [];
 
 	/// <summary>
 	///		Sentencias a ejecutar si el resultado de la condición es false
 	/// </summary>
-	public SentenceCollection SentencesElse { get; } = new SentenceCollection();
+	public SentenceCollection SentencesElse { get; } = [];
 }

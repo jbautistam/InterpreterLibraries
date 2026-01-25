@@ -6,17 +6,26 @@
 public class SentenceWhile : SentenceBase
 {
 	/// <summary>
-	///		Condición del bucle cuando aún no se han interpretado las expresiones
+	///		Genera la cadena de depuración
 	/// </summary>
-	public string ConditionString { get; set; }
+	public override string GetDebugInfo(int indent) 
+	{
+		string debug = AddDebug(indent, "While");
+
+			// Añade la condición y las sentencias
+			debug += Condition.GetDebugInfo(indent + 1);
+			debug += Sentences.GetDebugInfo(indent + 1);
+			// Devuelve la cadena de depuración
+			return debug;
+	}
 
 	/// <summary>
 	///		Condición
 	/// </summary>
-	public Expressions.ExpressionsCollection Condition { get; } = new Expressions.ExpressionsCollection();
+	public Expressions.ExpressionsCollection Condition { get; } = [];
 
 	/// <summary>
 	///		Sentencias
 	/// </summary>
-	public SentenceCollection Sentences { get; } = new SentenceCollection();
+	public SentenceCollection Sentences { get; } = [];
 }

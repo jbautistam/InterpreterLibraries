@@ -34,6 +34,8 @@ public class VariableModel
 		/// <summary>Por año</summary>
 		Year
 	}
+	// Variables privadas
+	private SymbolModel.SymbolType _type = SymbolModel.SymbolType.Unknown;
 
 	public VariableModel(string name, SymbolModel.SymbolType type, object? value)
 	{
@@ -41,9 +43,6 @@ public class VariableModel
 		Name = name;
 		Type = type;
 		Value = value;
-		// Asigna el tipo teniendo en cuenta el valor del objeto
-		if (type == SymbolModel.SymbolType.Unknown && value is not null)
-			Type = InferType(value);
 		// Asigna el valor predeterminado
 		if (value is null)
 			AssignDefault();
@@ -100,18 +99,12 @@ public class VariableModel
 	/// <summary>
 	///		Comprueba si el valor de la variable es mayor que un valor
 	/// </summary>
-	public bool IsGreaterThan(VariableModel value)
-	{
-		return Compare(value) == CompareResult.GreaterThan;
-	}
+	public bool IsGreaterThan(VariableModel value) => Compare(value) == CompareResult.GreaterThan;
 
 	/// <summary>
 	///		Comprueba si el valor de la variable es menor que un valor
 	/// </summary>
-	public bool IsLessThan(VariableModel value)
-	{
-		return Compare(value) == CompareResult.LessThan;
-	}
+	public bool IsLessThan(VariableModel value) => Compare(value) == CompareResult.LessThan;
 
 	/// <summary>
 	///		Comprueba si el valor de la variable es mayor o igual que otro
@@ -177,7 +170,7 @@ public class VariableModel
 			case SymbolModel.SymbolType.Date:
 					DateTime? date = ConvertToDate(this);
 
-						if (date == null)
+						if (date is null)
 							throw new NotImplementedException($"Source date has a null value. Variable {Name}");
 						else
 							Value = SumSubstractDate(date ?? DateTime.Now, ConvertToString(value), false);
@@ -201,13 +194,13 @@ public class VariableModel
 					incrementValue = -1 * incrementValue;
 				// Añade / resta los días, meses...
 				return type switch
-				{
-					DateIncrement.Day => value.AddDays(incrementValue),
-					DateIncrement.Week => value.AddDays(7 * incrementValue),
-					DateIncrement.Month => value.AddMonths(incrementValue),
-					DateIncrement.Year => value.AddYears(incrementValue),
-					_ => throw new NotImplementedException($"Increment type unknown. Variable {Name}. Increment {increment}"),
-				};
+						{
+							DateIncrement.Day => value.AddDays(incrementValue),
+							DateIncrement.Week => value.AddDays(7 * incrementValue),
+							DateIncrement.Month => value.AddMonths(incrementValue),
+							DateIncrement.Year => value.AddYears(incrementValue),
+							_ => throw new NotImplementedException($"Increment type unknown. Variable {Name}. Increment {increment}"),
+						};
 		}
 	}
 
@@ -244,10 +237,7 @@ public class VariableModel
 	/// <summary>
 	///		Comprueba si el valor de la variable es nulo
 	/// </summary>
-	public bool IsNull()
-	{
-		return Value == null;
-	}
+	public bool IsNull() => Value is null;
 
 	/// <summary>
 	///		Compara el valor de la variable con un valor
@@ -350,18 +340,12 @@ public class VariableModel
 	/// <summary>
 	///		Convierte un objeto a numérico
 	/// </summary>
-	private double ConvertToNumeric(VariableModel variable)
-	{
-		return Convert.ToDouble(variable.Value);
-	}
+	private double ConvertToNumeric(VariableModel variable) => Convert.ToDouble(variable.Value);
 
 	/// <summary>
 	///		Convierte un objeto a boolean
 	/// </summary>
-	private bool ConvertToBoolean(VariableModel variable)
-	{
-		return Convert.ToBoolean(variable.Value);
-	}
+	private bool ConvertToBoolean(VariableModel variable) => Convert.ToBoolean(variable.Value);
 
 	/// <summary>
 	///		Convierte un objeto a fecha
@@ -411,7 +395,18 @@ public class VariableModel
 	/// <summary>
 	///		Obtiene el tipo de la variable
 	/// </summary>
-	public SymbolModel.SymbolType Type { get; }
+	public SymbolModel.SymbolType Type 
+	{ 
+		set { _type = value; }
+		get
+		{
+			// Infiere el tipo si no se ha definido
+			if (_type == SymbolModel.SymbolType.Unknown && Value is not null)
+				_type = InferType(Value);
+			// Devuelve el tipo
+			return _type;
+		}
+	}
 
 	/// <summary>
 	///		Valor de la variable

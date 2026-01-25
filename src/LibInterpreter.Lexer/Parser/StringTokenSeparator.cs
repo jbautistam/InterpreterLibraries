@@ -8,10 +8,10 @@ namespace Bau.Libraries.LibInterpreter.Lexer.Parser;
 /// </summary>
 internal class StringTokenSeparator
 {
-	internal StringTokenSeparator(string source, RuleCollection rules)
+	internal StringTokenSeparator(string source, RulesDefinition rules)
 	{
-		CharSeparator = new StringCharSeparator(source);
-		Rules = rules;
+		CharSeparator = new StringCharSeparator(source, rules.Separators);
+		RulesDefinition = rules;
 	}
 
 	/// <summary>
@@ -35,28 +35,25 @@ internal class StringTokenSeparator
 					if (!CharSeparator.IsEof)
 					{
 						// Obtiene la regla que se corresponde con la siguiente cadena
-						foreach (RuleBase ruleBase in Rules)
+						foreach (RuleBase ruleBase in RulesDefinition.Rules)
 							if (!found)
 								switch (ruleBase)
 								{
 									case RuleDelimited rule:
-											CheckRuleDelimited(rule, tokens, ref found);
+											found = CheckRuleDelimited(rule, tokens);
 										break;
 									case RulePattern rule:
-											CheckRulePattern(rule, tokens, ref found);
-										break;
-									case RuleWord rule:
-											CheckRuleWord(rule, tokens, ref found);
+											found = CheckRulePattern(rule, tokens);
 										break;
 									case RuleWordFixed rule:
-											CheckRuleWordFixed(rule, tokens, ref found);
+											found = CheckRuleWordFixed(rule, tokens);
 										break;
 									default:
 										throw new NotImplementedException("Unknown lexical rule");
 								}
-						// Si no se ha encontrado nada, obtiene una palabra hasta el siguiente espacio
+						// Si no se ha encontrado nada, obtiene una palabra hasta el siguiente separador
 						if (!found)
-							tokens.Add(ReadWordToSpaces());
+							tokens.Add(ReadWordToSeparator());
 						// Obtiene la indentación del primer carácter
 						tokens[tokens.Count - 1].Indent = CharSeparator.GetIndentFrom(firstCharacter);
 					}
@@ -68,50 +65,48 @@ internal class StringTokenSeparator
 	/// <summary>
 	///		Obtiene un token a partir de una palabra clave de longitud fija
 	/// </summary>
-	private void CheckRuleWordFixed(RuleWordFixed rule, TokenCollection tokens, ref bool found)
+	private bool CheckRuleWordFixed(RuleWordFixed rule, TokenCollection tokens)
 	{
-		foreach (string word in rule.Words)
-			if (!string.IsNullOrWhiteSpace(word) && !found && CharSeparator.LookAtChar(word.Length).Equals(word, StringComparison.CurrentCultureIgnoreCase))
-			{ 
-				// Añade el token
-				tokens.Add(GetToken(rule, word, true));
-				// Indica que se ha encontrado
-				found = true;
-			}
+		// Comprueba una regla de palabras clave
+		if (!string.IsNullOrWhiteSpace(rule.Word))
+		{
+			string worldFound;
+
+				// Obtiene la siguiente palabra
+				if (rule.ToSeparator)
+					worldFound = CharSeparator.LookToSeparator();
+				else
+					worldFound = CharSeparator.LookAtChar(rule.Word.Length);
+				// Comprueba si es la palabra buscada
+				if (rule.Word.Equals(worldFound, StringComparison.CurrentCultureIgnoreCase))
+				{
+					// Añade el token
+					tokens.Add(GetToken(rule, rule.Word, true));
+					// Indica que se ha encontrado
+					return true;
+				}
+		}
+		// Si ha llegado hasta aquí es porque no lo ha encontrado
+		return false;
 	}
 
 	/// <summary>
 	///		Comprueba una regla delimitada
 	/// </summary>
-	private void CheckRuleDelimited(RuleDelimited rule, TokenCollection tokens, ref bool found)
+	private bool CheckRuleDelimited(RuleDelimited rule, TokenCollection tokens)
 	{
 		string startRule = GetStartRule(rule.Starts);
 
+			// Comprueba la regla
 			if (!string.IsNullOrWhiteSpace(startRule))
 			{ 
 				// Añade la palabra
 				tokens.Add(ReadWord(startRule, rule));
 				// Indica que se ha encontrado
-				found = true;
+				return true;
 			}
-	}
-
-	/// <summary>
-	///		Comprueba una regla de palabra reservada
-	/// </summary>
-	private void CheckRuleWord(RuleWord rule, TokenCollection tokens, ref bool found)
-	{
-		foreach (string word in rule.Words)
-			if (!found && CharSeparator.LookAtChar(word.Length).Equals(word, StringComparison.CurrentCultureIgnoreCase))
-			{
-				if (rule.ToFirstSpace && CharSeparator.CheckIsSpace(CharSeparator.LookAtChars(word.Length, 1)))
-				{ 
-					// Añade el token
-					tokens.Add(GetToken(rule, word, true));
-					// Indica que se ha encontrado
-					found = true;
-				}
-			}
+			// Si ha llegado hasta aquí es porque no ha encontrado nada
+			return false;
 	}
 
 	/// <summary>
@@ -134,15 +129,18 @@ internal class StringTokenSeparator
 	/// <summary>
 	///		Comprueba una regla a partir de un patrón de caracteres
 	/// </summary>
-	private void CheckRulePattern(RulePattern rule, TokenCollection tokens, ref bool found)
+	private bool CheckRulePattern(RulePattern rule, TokenCollection tokens)
 	{
+		// Comprueba el patrón
 		if (CharSeparator.CheckPatternStart(rule.PatternStart))
 		{ 
 			// Añade el token de un patrón
 			tokens.Add(GetToken(rule, CharSeparator.GetCharsPattern(rule.PatternStart, rule.PatternContent), false));
-			// Indica que se ha grabado
-			found = true;
+			// Indica que se ha encontrado
+			return true;
 		}
+		// Si ha llegado hasta aquí es porque no ha encontrado nada
+		return false;
 	}
 
 	/// <summary>
@@ -212,6 +210,11 @@ internal class StringTokenSeparator
 	private TokenBase ReadWordToSpaces() => new TokenBase(string.Empty, CharSeparator.Row, CharSeparator.Column, CharSeparator.GetCharsToSpace());
 
 	/// <summary>
+	///		Lee un token hasta encontrar un separador
+	/// </summary>
+	private TokenBase ReadWordToSeparator() => new TokenBase(string.Empty, CharSeparator.Row, CharSeparator.Column, CharSeparator.GetCharsToSeparator());
+
+	/// <summary>
 	///		Clase para obtención de caracteres
 	/// </summary>
 	internal StringCharSeparator CharSeparator { get; }
@@ -219,5 +222,5 @@ internal class StringTokenSeparator
 	/// <summary>
 	///		Reglas
 	/// </summary>
-	internal RuleCollection Rules { get; }
+	internal RulesDefinition RulesDefinition { get; }
 }

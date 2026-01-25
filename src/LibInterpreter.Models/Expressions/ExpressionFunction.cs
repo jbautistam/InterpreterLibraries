@@ -46,5 +46,5 @@ public class ExpressionFunction : ExpressionBase
 	/// <summary>
 	///		Expresiones de los argumentos de llamada
 	/// </summary>
-	public List<ExpressionsCollection> Arguments { get; } = new List<ExpressionsCollection>();
+	public List<ExpressionsCollection> Arguments { get; } = [];
 }

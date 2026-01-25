@@ -3,13 +3,8 @@
 /// <summary>
 ///		Tabla de funciones
 /// </summary>
-public class TableFunctionsModel
+public class TableFunctionsModel(ContextModel context)
 {
-	public TableFunctionsModel(ContextModel context)
-	{
-		Context = context;
-	}
-
 	/// <summary>
 	///		Añade una función definida por el usuario
 	/// </summary>
@@ -28,7 +23,7 @@ public class TableFunctionsModel
 	/// </summary>
 	public void Add(BaseFunctionModel function)
 	{
-		string name = Normalize(function.Definition.Name);
+		string name = function.Definition.Name;
 
 			// Añade / modifica el valor
 			if (Functions.ContainsKey(name))
@@ -49,10 +44,8 @@ public class TableFunctionsModel
 	/// <summary>
 	///		Obtiene una función
 	/// </summary>
-	public BaseFunctionModel GetIfExists(string name)
+	public BaseFunctionModel? GetIfExists(string name)
 	{
-		// Normaliza el nombre
-		name = Normalize(name);
 		// Obtiene el valor
 		if (Functions.ContainsKey(name))
 			return Functions[name];
@@ -63,29 +56,25 @@ public class TableFunctionsModel
 	}
 
 	/// <summary>
-	///		Normaliza el nombre de la variable
-	/// </summary>
-	private string Normalize(string name)
-	{
-		return name.ToUpper();
-	}
-
-	/// <summary>
 	///		Indizador
 	/// </summary>
-	public BaseFunctionModel this[string name]
+	public BaseFunctionModel? this[string name]
 	{
 		get { return GetIfExists(name); }
-		set { Add(value); }
+		set 
+		{ 
+			if (value is not null)
+				Add(value); 
+		}
 	}
 
 	/// <summary>
 	///		Contexto
 	/// </summary>
-	private ContextModel Context { get; }
+	private ContextModel Context { get; } = context;
 
 	/// <summary>
 	///		Diccionario de funciones
 	/// </summary>
-	private Dictionary<string, BaseFunctionModel> Functions { get; } = new Dictionary<string, BaseFunctionModel>();
+	private Dictionary<string, BaseFunctionModel> Functions { get; } = new(StringComparer.CurrentCultureIgnoreCase);
 }

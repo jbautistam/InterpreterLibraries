@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Rules\RuleWord.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LibInterpreter.Models\LibInterpreter.Models.csproj" />
   </ItemGroup>
 

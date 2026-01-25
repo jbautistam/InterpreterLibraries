@@ -3,31 +3,20 @@
 /// <summary>
 ///		Expresión indicando un error
 /// </summary>
-public class ExpressionError : ExpressionBase
+public class ExpressionError(string message) : ExpressionBase
 {
-	public ExpressionError(string message)
-	{
-		Message = message;
-	}
-
 	/// <summary>
 	///		Clona la expresión
 	/// </summary>
-	public override ExpressionBase Clone()
-	{
-		return new ExpressionError(Message);
-	}
+	public override ExpressionBase Clone() => new ExpressionError(Message);
 
 	/// <summary>
 	///		Obtiene la información de depuración
 	/// </summary>
-	public override string GetDebugInfo()
-	{
-		return $"Error: {Message}]";
-	}
+	public override string GetDebugInfo() => $"Error: {Message}]";
 
 	/// <summary>
 	///		Mensaje de error
 	/// </summary>
-	public string Message { get; }
+	public string Message { get; } = message;
 }

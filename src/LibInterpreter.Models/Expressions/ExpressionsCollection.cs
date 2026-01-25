@@ -8,17 +8,13 @@ public class ExpressionsCollection : List<ExpressionBase>
 	/// <summary>
 	///		Obtiene una cadena de depuración
 	/// </summary>
-	public string GetDebugInfo()
+	public string GetDebugInfo(int indent)
 	{
-		string debug = "";
+		string debug = string.Empty;
 
 			// Añade los datos a la cadena de depuración
 			foreach (ExpressionBase expression in this)
-			{
-				if (!string.IsNullOrEmpty(debug))
-					debug += " # ";
-				debug += expression.GetDebugInfo();
-			}
+				debug += new string('\t', indent) + expression.GetDebugInfo();
 			// Devuelve la cadena de depuración
 			return debug;
 	}
@@ -28,7 +24,7 @@ public class ExpressionsCollection : List<ExpressionBase>
 	/// </summary>
 	public ExpressionsCollection Clone()
 	{
-		ExpressionsCollection expressions = new ExpressionsCollection();
+		ExpressionsCollection expressions = [];
 
 			// Clona las expresiones
 			foreach (ExpressionBase expression in this)
@@ -40,8 +36,5 @@ public class ExpressionsCollection : List<ExpressionBase>
 	/// <summary>
 	///		Indica si la lista de expresiones está vacía
 	/// </summary>
-	public bool Empty
-	{
-		get { return Count == 0; }
-	}
+	public bool Empty => Count == 0;
 }

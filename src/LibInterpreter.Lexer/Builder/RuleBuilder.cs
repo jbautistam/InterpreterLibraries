@@ -13,7 +13,7 @@ public class RuleBuilder
 	public RuleBuilder WithDelimited(string token, string separator)
 	{
 		// Añade una regla delimitada
-		Rules.Add(new RuleDelimited(token, [ separator ], [ separator ], false, false, false, false, false));
+		RulesDefinition.Rules.Add(new RuleDelimited(token, [ separator ], [ separator ], false, false, false, false, false));
 		// Devuelve el generador
 		return this;
 	}
@@ -24,18 +24,30 @@ public class RuleBuilder
 	public RuleBuilder WithDelimited(string token, string start, string end)
 	{
 		// Añade una regla delimitada
-		Rules.Add(new RuleDelimited(token, [ start ], [ end ], false, false, false, false, false));
+		RulesDefinition.Rules.Add(new RuleDelimited(token, [ start ], [ end ], false, false, false, false, false));
 		// Devuelve el generador
 		return this;
 	}
 
 	/// <summary>
-	///		Añade una regla <see cref="RuleWordFixed"/> con varias palabras claves
+	///		Añade una regla <see cref="RuleWordFixed"/> indicando si se debe buscar hasta uno de los separadores definidos en <see cref="RuleCollection"/>
+	/// </summary>
+	public RuleBuilder WithWord(string token, string word, bool toSeparator)
+	{
+		// Añade una regla asociada a una palabra clave
+		RulesDefinition.Rules.Add(new RuleWordFixed(token, word, toSeparator));
+		// Devuelve el generador
+		return this;
+	}
+
+	/// <summary>
+	///		Añade una regla <see cref="RuleWordFixed"/> indicando si se debe buscar hasta uno de los separadores definidos en <see cref="RuleCollection"/>
 	/// </summary>
 	public RuleBuilder WithWords(string token, params string[] words)
 	{
-		// Añade una regla asociada a una serie de palabras clave
-		Rules.Add(new RuleWordFixed(token, words));
+		// Añade una regla asociada a una palabra clave
+		foreach (string word in words)
+			RulesDefinition.Rules.Add(new RuleWordFixed(token, word, false));
 		// Devuelve el generador
 		return this;
 	}
@@ -46,7 +58,7 @@ public class RuleBuilder
 	public RuleBuilder WithPattern(string token, string patternStart, string patternContent)
 	{
 		// Añade el patrón
-		Rules.Add(new RulePattern(token, patternStart, patternContent));
+		RulesDefinition.Rules.Add(new RulePattern(token, patternStart, patternContent));
 		// Devuelve el generador
 		return this;
 	}
@@ -72,12 +84,31 @@ public class RuleBuilder
 	public RuleBuilder WithDefaultLogicalOperators(string token) => WithWords(token, ">=", "<=", "==", "<", ">", "!=");
 
 	/// <summary>
+	///		Asigna el separador de expresiones predeterminado (()+=-.><)
+	/// </summary>
+	public RuleBuilder WithDefaultSeparators() => WithSeparators("()+=-.><");
+
+	/// <summary>
+	///		Asigna el separador de expresiones
+	/// </summary>
+	public RuleBuilder WithSeparators(string separators, bool removeDefault = false)
+	{
+		// Vacía el separador de expresiones
+		if (removeDefault)
+			RulesDefinition.Separators = string.Empty;
+		// Añade los separadores de expresiones
+		RulesDefinition.Separators += separators;
+		// Devuelve el generador
+		return this;
+	}
+
+	/// <summary>
 	///		Añade una regla para los patrones desde un inicio a un fin de línea (por ejemplo, ## para comentarios hasta el final de línea)
 	/// </summary>
 	public RuleBuilder WithToEnd(string token, string start)
 	{
 		// Añade el patrón
-		Rules.Add(new RuleDelimited(token, start, string.Empty, true, false, true, false, true));
+		RulesDefinition.Rules.Add(new RuleDelimited(token, start, string.Empty, true, false, true, false, true));
 		// Devuelve el generador
 		return this;
 	}
@@ -85,10 +116,10 @@ public class RuleBuilder
 	/// <summary>
 	///		Genera las reglas
 	/// </summary>
-	public List<RuleBase> Build() => Rules;
+	public RulesDefinition Build() => RulesDefinition;
 
 	/// <summary>
 	///		Reglas generadas
 	/// </summary>
-	private List<RuleBase> Rules { get; } = [];
+	private RulesDefinition RulesDefinition { get; } = new();
 }

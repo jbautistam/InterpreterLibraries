@@ -5,14 +5,8 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Functions;
 /// <summary>
 ///		Generador para funciones implicitas
 /// </summary>
-public class ImplicitFunctionBuilder
+public class ImplicitFunctionBuilder(string name, SymbolModel.SymbolType type)
 {
-	public ImplicitFunctionBuilder(string name, SymbolModel.SymbolType type)
-	{
-		Name = name;
-		Type = type;
-	}
-
 	/// <summary>
 	///		Añade un argumento a la función
 	/// </summary>
@@ -45,15 +39,15 @@ public class ImplicitFunctionBuilder
 	/// <summary>
 	///		Nombre de la función definida
 	/// </summary>
-	private string Name { get; }
+	private string Name { get; } = name;
 
 	/// <summary>
 	///		Tipo de la función definida
 	/// </summary>
-	private SymbolModel.SymbolType Type { get; }
+	private SymbolModel.SymbolType Type { get; } = type;
 
 	/// <summary>
 	///		Argumentos
 	/// </summary>
-	private List<SymbolModel> Arguments { get; } = new List<SymbolModel>();
+	private List<SymbolModel> Arguments { get; } = [];
 }

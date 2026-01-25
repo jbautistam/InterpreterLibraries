@@ -3,8 +3,8 @@
 /// <summary>
 ///		Expresión para un operador lógico
 /// </summary>
-    public class ExpressionOperatorLogical : ExpressionOperatorBase
-    {
+public class ExpressionOperatorLogical(ExpressionOperatorLogical.LogicalType type) : ExpressionOperatorBase
+{
 	/// <summary>
 	///		Tipo de operación
 	/// </summary>
@@ -24,31 +24,20 @@
 		LessOrEqual
 	}
 
-	public ExpressionOperatorLogical(LogicalType type)
-	{
-		Type = type;
-	}
-
 	/// <summary>
 	///		Clona la expresión
 	/// </summary>
-	public override ExpressionBase Clone()
-	{
-		return new ExpressionOperatorLogical(Type);
-	}
+	public override ExpressionBase Clone() => new ExpressionOperatorLogical(Type);
 
 	/// <summary>
 	///		Obtiene la información de depuración
 	/// </summary>
-	public override string GetDebugInfo()
-	{
-		return $"[{Type.ToString()}]";
-	}
+	public override string GetDebugInfo() => $"[{Type.ToString()}]";
 
 	/// <summary>
 	///		Tipo de operación
 	/// </summary>
-	public LogicalType Type { get; }
+	public LogicalType Type { get; } = type;
 
 	/// <summary>
 	///		Obtiene la prioridad de la operación
@@ -57,19 +46,12 @@
 	{
 		get
 		{
-			switch (Type)
-			{
-				case LogicalType.Greater:
-				case LogicalType.GreaterOrEqual:
-				case LogicalType.Less:
-				case LogicalType.LessOrEqual:
-					return 18;
-				case LogicalType.Equal:
-				case LogicalType.Distinct:
-					return 17;
-				default:
-					return 0;
-			}
+			return Type switch
+					{
+						LogicalType.Greater or LogicalType.GreaterOrEqual or LogicalType.Less or LogicalType.LessOrEqual => 18,
+						LogicalType.Equal or LogicalType.Distinct => 17,
+						_ => 0,
+					};
 		}
 	}
 }

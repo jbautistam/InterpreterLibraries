@@ -5,9 +5,10 @@
 /// </summary>
 internal class StringCharSeparator
 {
-	internal StringCharSeparator(string source)
+	internal StringCharSeparator(string source, string? separators)
 	{
 		Source = source;
+		Separators = separators;
 		IndexActualChar = 0;
 		Row = 1;
 		Column = 1;
@@ -101,6 +102,20 @@ internal class StringCharSeparator
 	}
 
 	/// <summary>
+	///		Obtiene los caracteres hasta el primer separador
+	/// </summary>
+	internal string GetCharsToSeparator()
+	{
+		string output = string.Empty;
+
+			// Obtiene los caracteres
+			while (!IsEof && !IsSpace && !CheckIsSeparator(Source[IndexActualChar]))
+				output += GetNextChar();
+			// Devuelve la cadena de salida
+			return output;
+	}
+
+	/// <summary>
 	///		Salta los espacios
 	/// </summary>
 	internal void SkipSpaces()
@@ -112,17 +127,14 @@ internal class StringCharSeparator
 	/// <summary>
 	///		Comprueba si un carácter es un espacio
 	/// </summary>
-	internal bool CheckIsSpace(string character)
-	{
-		return character == " " || character == "\t" || character == "\r" || character == "\n";
-	}
+	internal bool CheckIsSpace(string character) => character == " " || character == "\t" || character == "\r" || character == "\n";
 
 	/// <summary>
 	///		Obtiene un carácter
 	/// </summary>
 	internal string LookAtChar(int chars = 1)
 	{
-		string output = "";
+		string output = string.Empty;
 
 			// Recoge los caracteres
 			for (int index = 0; index < chars; index++)
@@ -135,18 +147,46 @@ internal class StringCharSeparator
 	/// <summary>
 	///		Obtiene una serie de caracteres
 	/// </summary>
-	internal string LookAtChars(int from, int length)
+	internal string LookAtChars(int from, int length) => Mid(Source, IndexActualChar + from, length);
+
+	/// <summary>
+	///		Obtiene los caracteres hasta el primer separador
+	/// </summary>
+	internal string LookToSeparator()
 	{
-		return Mid(Source, IndexActualChar + from, length);
+		string result = string.Empty;
+			
+			// Obtiene los caracters
+			if (!string.IsNullOrWhiteSpace(Source))
+			{
+				bool end = false;
+				int index = IndexActualChar;
+
+					// Obtiene los caracteres hasta que se encuentra un separador
+					while (index <  Source.Length && !end)
+					{
+						// Si no es un espacio ni un separador, se añade
+						if (CheckIsSpace(Source[index].ToString()) || CheckIsSeparator(Source[index]))
+							end = true;
+						else
+							result += Source[index];
+						// Incrementa el índice
+						index++;
+					}
+			}
+			// Devuelve la cadena
+			return result;
 	}
+
+	/// <summary>
+	///		Comprueba si un carácter es un separador definido
+	/// </summary>
+	private bool CheckIsSeparator(char chr) => !string.IsNullOrWhiteSpace(Separators) && Separators.Contains(chr);
 
 	/// <summary>
 	///		Obtiene la cadena media
 	/// </summary>
-	private string Mid(string source, int first, int length)
-	{
-		return Left(From(source, first), length);
-	}
+	private string Mid(string source, int first, int length) => Left(From(source, first), length);
 
 	/// <summary>
 	///		Obtiene una cadena a partir de un carácter
@@ -242,6 +282,11 @@ internal class StringCharSeparator
 	}
 
 	/// <summary>
+	///		Comprueba si un carácter es legible: letra o dígito
+	/// </summary>
+	internal bool CheckIsLetterOrDigit(char source) => char.IsLetter(source) || char.IsNumber(source);
+
+	/// <summary>
 	///		Obtiene la indentación de un carácter
 	/// </summary>
 	internal int GetIndentFrom(int start)
@@ -265,18 +310,12 @@ internal class StringCharSeparator
 	/// <summary>
 	///		Indica si es el final del texto
 	/// </summary>
-	internal bool IsEof
-	{
-		get { return string.IsNullOrWhiteSpace(Source) || IndexActualChar >= Source.Length; }
-	}
+	internal bool IsEof => string.IsNullOrWhiteSpace(Source) || IndexActualChar >= Source.Length;
 
 	/// <summary>
 	///		Indica si el siguiente carácter es un espacio
 	/// </summary>
-	public bool IsSpace
-	{
-		get { return CheckIsSpace(LookAtChar()); }
-	}
+	public bool IsSpace => CheckIsSpace(LookAtChar());
 
 	/// <summary>
 	///		Indice del carácter actual
@@ -297,4 +336,9 @@ internal class StringCharSeparator
 	///		Línea original
 	/// </summary>
 	internal string Source { get; }
+
+	/// <summary>
+	///		Separadores
+	/// </summary>
+	internal string? Separators { get; }
 }

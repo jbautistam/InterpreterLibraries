@@ -12,8 +12,8 @@ internal class ExpressionConversorRpn
 	/// </summary>
 	internal ExpressionsCollection ConvertToRPN(ExpressionsCollection expressions)
 	{
-		ExpressionsCollection stackOutput = new ExpressionsCollection();
-		Stack<ExpressionBase> stackOperators = new Stack<ExpressionBase>();
+		ExpressionsCollection stackOutput = [];
+		Stack<ExpressionBase> stackOperators = [];
 
 			// Convierte las expresiones en una pila
 			foreach (ExpressionBase expressionBase in expressions)

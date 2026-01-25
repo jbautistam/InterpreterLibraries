@@ -3,23 +3,18 @@
 /// <summary>
 ///		Expresión de tipo variable
 /// </summary>
-public class ExpressionVariableIdentifier : ExpressionBase
+public class ExpressionVariableIdentifier(string name) : ExpressionBase
 {
-	public ExpressionVariableIdentifier(string name)
-	{
-		Name = name;
-	}
-
 	/// <summary>
 	///		Clona el identificador de variable
 	/// </summary>
 	public override ExpressionBase Clone()
 	{
-		ExpressionVariableIdentifier variable = new ExpressionVariableIdentifier(Name);
+		ExpressionVariableIdentifier variable = new(Name);
 
 			// Clona las expresiones
 			variable.IndexExpressions = IndexExpressions.Clone();
-			if (Member != null)
+			if (Member is not null)
 				variable.Member = Member.Clone() as ExpressionVariableIdentifier;
 			// Devuelve el objeto clonado
 			return variable;
@@ -34,7 +29,7 @@ public class ExpressionVariableIdentifier : ExpressionBase
 
 			// Añade el índice
 			if (IndexExpressions?.Count > 0)
-				debug += "[" + IndexExpressions.GetDebugInfo() + "]";
+				debug += "[" + IndexExpressions.GetDebugInfo(0) + "]";
 			// Añade el miembro
 			if (Member != null)
 				debug += "->" + Member.GetDebugInfo();
@@ -45,15 +40,15 @@ public class ExpressionVariableIdentifier : ExpressionBase
 	/// <summary>
 	///		Nombre de la variable
 	/// </summary>
-	public string Name { get; }
+	public string Name { get; } = name;
 
 	/// <summary>
 	///		Expresiones de índice
 	/// </summary>
-	public ExpressionsCollection IndexExpressions { get; set; } = new ExpressionsCollection();
+	public ExpressionsCollection IndexExpressions { get; set; } = [];
 
 	/// <summary>
 	///		Identificador de variable
 	/// </summary>
-	public ExpressionVariableIdentifier Member { get; set; }
+	public ExpressionVariableIdentifier? Member { get; set; }
 }

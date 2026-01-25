@@ -145,9 +145,9 @@ public abstract class ProgramProcessor
 			AddError("Cant find the variable name");
 		else
 		{
-			VariableModel? variable = Context.Actual.VariablesTable.Get(sentence.Variable);
+			VariableModel? variable = Context.Actual.VariablesTable.Get(sentence.Variable, Options.NeedDeclareVariables);
 
-				// Si no se ha definido la variable, añade un errorDeclara la variable si no existía
+				// Si no se ha definido la variable, añade un error o declara la variable si no existía
 				if (variable is null)
 					AddError($"Undefined variable {sentence.Variable}");
 				else
@@ -164,15 +164,6 @@ public abstract class ProgramProcessor
 			AddError("Cant find the variable name for loop index");
 		else 
 		{
-			// Interpreta las expresiones de inicio ...
-			if (!string.IsNullOrWhiteSpace(sentence.StartExpressionString) && sentence.StartExpression.Count == 0)
-				sentence.StartExpression = ParseExpression(sentence.StartExpressionString);
-			// Interpreta las expresiones de fin ...
-			if (!string.IsNullOrWhiteSpace(sentence.EndExpressionString) && sentence.EndExpression.Count == 0)
-				sentence.EndExpression = ParseExpression(sentence.EndExpressionString);
-			// Interpreta las expresiones de paso ...
-			if (!string.IsNullOrWhiteSpace(sentence.StepExpressionString) && sentence.StepExpression.Count == 0)
-				sentence.StepExpression = ParseExpression(sentence.EndExpressionString);
 			// Ejecuta el bucle
 			if (sentence.StartExpression.Count == 0)
 				AddError("Cant find the start expression for loop index");
@@ -340,7 +331,7 @@ public abstract class ProgramProcessor
 		{
 			VariableModel? result = await ExecuteExpressionAsync(sentence.ConditionExpression, cancellationToken);
 
-				if (result != null)
+				if (result is not null)
 				{
 					if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 						AddError("If condition result is not a logical value");
@@ -373,7 +364,7 @@ public abstract class ProgramProcessor
 				{
 					VariableModel? result = await ExecuteExpressionAsync(sentence.Condition, cancellationToken);
 
-						if (result != null)
+						if (result is not null)
 						{
 							if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 								AddError("While condition result is not a logical value");
@@ -407,7 +398,7 @@ public abstract class ProgramProcessor
 						// Ejecuta la condición
 						result = await ExecuteExpressionAsync(sentence.Condition, cancellationToken);
 						// Comprueba el resultado
-						if (result != null)
+						if (result is not null)
 						{
 							if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
 								AddError("Do while condition result is not a logical value");
@@ -439,9 +430,9 @@ public abstract class ProgramProcessor
 			AddError("Cant find the name function for call");
 		else
 		{
-			BaseFunctionModel function = Context.Actual.FunctionsTable.GetIfExists(sentence.Function);
+			BaseFunctionModel? function = Context.Actual.FunctionsTable.GetIfExists(sentence.Function);
 
-				if (function == null)
+				if (function is null)
 					AddError($"Cant find the function to call: {sentence.Function}");
 				else
 					await ExecuteFunctionAsync(function, sentence.Arguments, false, cancellationToken);
@@ -460,9 +451,9 @@ public abstract class ProgramProcessor
 				AddError("Cant find the name funcion for call");
 			else
 			{
-				BaseFunctionModel function = Context.Actual.FunctionsTable.GetIfExists(expression.Function);
+				BaseFunctionModel? function = Context.Actual.FunctionsTable.GetIfExists(expression.Function);
 
-					if (function == null)
+					if (function is null)
 						AddError($"Cant find the function to call: {expression.Function}");
 					else
 						result = await ExecuteFunctionAsync(function, expression.Arguments, true, cancellationToken);
@@ -516,7 +507,7 @@ public abstract class ProgramProcessor
 							if (waitReturn)
 							{
 								// y obtiene el resultado
-								result = Context.Actual.VariablesTable.Get(Context.Actual.ScopeFuntionResultVariable);
+								result = Context.Actual.VariablesTable.Get(Context.Actual.ScopeFuntionResultVariable, Options.NeedDeclareVariables);
 								// Si no se ha obtenido ningún resultado (faltaba la sentencia return), añade un error
 								if (result == null)
 									AddError($"Cant find result for funcion {function.Definition.Name}. Check if define return sentence");
@@ -567,6 +558,28 @@ public abstract class ProgramProcessor
 	}
 
 	/// <summary>
+	///		Ejecuta una expresión
+	/// </summary>
+	protected async Task<(string? error, bool result)> ExecuteConditionAsync(ExpressionsCollection expressions, CancellationToken cancellationToken)
+	{
+		(string? error, bool result) results = (string.Empty, false);
+		VariableModel? result = await ExecuteExpressionAsync(expressions, cancellationToken);
+
+			// Comprueba la condición
+			if (result is not null)
+			{
+				if (result.Type != SymbolModel.SymbolType.Boolean || result.Value is not bool resultLogical)
+					results = ("Condition result is not a logical value", false);
+				else 
+					results = (null, resultLogical);
+			}
+			else
+				results = ("Can't evaluate the expression", false);
+			// Devuelve los resultados
+			return results;
+	}
+
+	/// <summary>
 	///		Interpreta una cadena de expresión
 	/// </summary>
 	protected abstract ExpressionsCollection ParseExpression(string expression);
@@ -603,7 +616,7 @@ public abstract class ProgramProcessor
 	/// <summary>
 	///		Opciones de ejecución del procesador
 	/// </summary>
-	protected ProcessorOptions Options { get; }
+	public ProcessorOptions Options { get; }
 
 	/// <summary>
 	///		Contexto de ejecución

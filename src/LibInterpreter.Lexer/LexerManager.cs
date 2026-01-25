@@ -5,7 +5,7 @@ namespace Bau.Libraries.LibInterpreter.Lexer;
 /// <summary>
 ///		Manager para el proceso de obtener los tokens de un texto
 /// </summary>
-public class LexerManager
+public class LexerManager(Rules.RulesDefinition rules)
 {
 	/// <summary>
 	///		Interpreta un texto
@@ -15,5 +15,5 @@ public class LexerManager
 	/// <summary>
 	///		Reglas para obtener tokens
 	/// </summary>
-	public Rules.RuleCollection Rules { get; } = [];
+	public Rules.RulesDefinition Rules { get; } = rules;
 }

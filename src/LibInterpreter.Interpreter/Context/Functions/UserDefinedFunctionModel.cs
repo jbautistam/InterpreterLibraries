@@ -6,14 +6,10 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Functions;
 /// <summary>
 ///		Función definida por el usuario (desde código)
 /// </summary>
-public class UserDefinedFunctionModel : BaseFunctionModel
+public class UserDefinedFunctionModel(SymbolModel definition, List<SymbolModel> arguments) : BaseFunctionModel(definition, arguments)
 {
-	public UserDefinedFunctionModel(SymbolModel definition, List<SymbolModel> arguments) : base(definition, arguments)
-	{
-	}
-
 	/// <summary>
 	///		Contenido de la función
 	/// </summary>
-	public SentenceCollection Sentences { get; } = new();
+	public SentenceCollection Sentences { get; } = [];
 }

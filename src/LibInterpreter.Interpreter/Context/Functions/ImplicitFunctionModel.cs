@@ -5,9 +5,6 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Context.Functions;
 /// <summary>
 ///		Función implícita (definida por el intérprete) 
 /// </summary>
-public class ImplicitFunctionModel : BaseFunctionModel
+public class ImplicitFunctionModel(SymbolModel definition, List<SymbolModel> arguments) : BaseFunctionModel(definition, arguments)
 {
-	public ImplicitFunctionModel(SymbolModel definition, List<SymbolModel> arguments) : base(definition, arguments)
-	{
-	}
 }

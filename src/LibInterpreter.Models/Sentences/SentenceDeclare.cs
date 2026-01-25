@@ -6,17 +6,25 @@
 public class SentenceDeclare : SentenceBase
 {
 	/// <summary>
-	///		Variable
+	///		Genera la cadena de depuración
 	/// </summary>
-	public Symbols.SymbolModel Variable { get; } = new Symbols.SymbolModel();
+	public override string GetDebugInfo(int indent) 
+	{
+		string debug = AddDebug(indent, $"Declare {Variable.GetDebugInfo()}");
+
+			// Añade la expresión
+			debug += Expressions.GetDebugInfo(indent + 1);
+			// Devuelve la cadena de depuración
+			return debug;
+	}
 
 	/// <summary>
-	///		Expresión (antes de interpretar)
+	///		Variable
 	/// </summary>
-	public string ExpressionString { get; set; }
+	public Symbols.SymbolModel Variable { get; } = new();
 
 	/// <summary>
 	///		Valor de la variable
 	/// </summary>
-	public Expressions.ExpressionsCollection Expressions { get; } = new Expressions.ExpressionsCollection();
+	public Expressions.ExpressionsCollection Expressions { get; } = [];
 }

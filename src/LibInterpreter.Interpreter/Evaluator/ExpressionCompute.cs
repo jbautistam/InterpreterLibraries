@@ -8,7 +8,7 @@ namespace Bau.Libraries.LibInterpreter.Interpreter.Evaluator;
 /// <summary>
 ///		Clase para el cálculo de expresiones
 /// </summary>
-internal class ExpressionCompute
+internal class ExpressionCompute(ProgramProcessor processor)
 {
 	/// <summary>
 	///		Enumerado con el tipo de operación que se debe hacer sobre una fecha
@@ -31,11 +31,6 @@ internal class ExpressionCompute
 		Seconds
 	}
 
-	internal ExpressionCompute(ProgramProcessor processor)
-	{
-		Processor = processor;
-	}
-
 	/// <summary>
 	///		Evalúa una serie de expresiones
 	/// </summary>
@@ -52,7 +47,7 @@ internal class ExpressionCompute
 																			 CancellationToken cancellationToken)
 	{
 		string error = string.Empty;
-		Stack<VariableModel> stackOperators = new Stack<VariableModel>();
+		Stack<VariableModel> stackOperators = [];
 
 			// Calcula el resultado
 			foreach (ExpressionBase expressionBase in stackExpressions)
@@ -63,7 +58,7 @@ internal class ExpressionCompute
 								stackOperators.Push(new VariableModel("Constant", expression.Type, expression.Value));
 							break;
 						case ExpressionVariableIdentifier expression:
-								(string errorSearch, VariableModel variable) = await SearchAsync(context, expression, cancellationToken);
+								(string errorSearch, VariableModel? variable) = await SearchAsync(context, expression, cancellationToken);
 
 									// Comprueba que se haya encontrado la variable y la añade a la pila
 									if (!string.IsNullOrWhiteSpace(errorSearch))
@@ -110,10 +105,12 @@ internal class ExpressionCompute
 								{
 									VariableModel second = stackOperators.Pop(); //? cuidado al sacar de la pila, están al revés
 									VariableModel first = stackOperators.Pop();
-									VariableModel result = ComputeBinary(expression, first, second, out error);
+									VariableModel? result = ComputeBinary(expression, first, second, out error);
 
 										// Si no ha habido ningún error, se añade a la pila
-										if (string.IsNullOrEmpty(error))
+										if (result is null)
+											error = "Can't compute the expression";
+										else if (string.IsNullOrEmpty(error))
 											stackOperators.Push(result);
 								}
 							break;
@@ -146,14 +143,17 @@ internal class ExpressionCompute
 
 					if (!string.IsNullOrWhiteSpace(errorCompute))
 						error = errorCompute;
-					else if (indexVariable.Type != SymbolModel.SymbolType.Numeric)
-						error = "Index expression is not a numeric value";
-					else
-						index = (int) indexVariable.Value;
+					else if (indexVariable is not null)
+					{
+						if (indexVariable.Type != SymbolModel.SymbolType.Numeric)
+							error = "Index expression is not a numeric value";
+						else if (indexVariable.Value is int number)
+							index = number;
+					}
 			}
 			// Si no hay ningún error, obtiene la variable
 			if (string.IsNullOrWhiteSpace(error))
-				variable = context.VariablesTable.Get(expressionVariable.Name, index);
+				variable = context.VariablesTable.Get(expressionVariable.Name, Processor.Options.NeedDeclareVariables, index);
 			// Devuelve la variable
 			return (error, variable);
 	}
@@ -528,5 +528,5 @@ internal class ExpressionCompute
 	/// <summary>
 	///		Procesador
 	/// </summary>
-	private ProgramProcessor Processor { get; }
+	private ProgramProcessor Processor { get; } = processor;
 }

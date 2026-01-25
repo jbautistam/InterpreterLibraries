@@ -23,13 +23,13 @@ public class ContextModel
 	/// </summary>
 	public Variables.TableVariableModel GetVariablesRecursive()
 	{
-		Variables.TableVariableModel table = new Variables.TableVariableModel(this);
+		Variables.TableVariableModel table = new(this);
 
 			// Añade las variables del padre
-			if (Parent != null)
+			if (Parent is not null)
 				table = Parent.GetVariablesRecursive();
 			// Añade / sustituye las variables propias
-			foreach (System.Collections.Generic.KeyValuePair<string, Variables.VariableModel> item in VariablesTable.GetAll())
+			foreach (KeyValuePair<string, Variables.VariableModel> item in VariablesTable.GetAll())
 				table.Add(item.Value);
 			// Devuelve la colección de tablas
 			return table;

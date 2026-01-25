@@ -1,19 +1,17 @@
 ﻿namespace Bau.Libraries.LibInterpreter.Lexer.Rules;
 
 /// <summary>
-///		Regla con los datos de una palabra con longitud fija (sin separadores)
+///		Regla con los datos de una palabra con longitud fija (utilizando o no los separadores)
 /// </summary>
-public class RuleWordFixed : RuleBase
+public class RuleWordFixed(string tokenType, string word, bool toSeparator) : RuleBase(tokenType, true, true)
 {
-	public RuleWordFixed(string tokenType, string word) : this(tokenType, new string[] { word }) {}
-
-	public RuleWordFixed(string tokenType, string[] words) : base(tokenType, false, false)
-	{
-		Words = words;
-	}
+	/// <summary>
+	///		Palabra clave
+	/// </summary>
+	public string Word { get; set; } = word;
 
 	/// <summary>
-	///		Palabras clave
+	///		Indica si se debe buscar hasta un separador
 	/// </summary>
-	public string[] Words { get; set; }
+	public bool ToSeparator { get; } = toSeparator;
 }

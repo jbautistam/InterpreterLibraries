@@ -1,4 +1,5 @@
-﻿namespace Bau.Libraries.LibInterpreter.Interpreter.Context;
+﻿
+namespace Bau.Libraries.LibInterpreter.Interpreter.Context;
 
 /// <summary>
 ///		Pila de <see cref="ContextModel"/>
@@ -34,6 +35,17 @@ public class ContextStackModel
 	}
 
 	/// <summary>
+	///		Obtiene la tabla de variables del contexto inicial
+	/// </summary>
+	public Dictionary<string, object?> GetMainContext()
+	{
+		if (Contexts.Count > 0)
+			return Contexts[0].VariablesTable.GetDictionary();
+		else
+			return [];
+	}
+
+	/// <summary>
 	///		Contexto actual
 	/// </summary>
 	public ContextModel Actual
@@ -50,5 +62,5 @@ public class ContextStackModel
 	/// <summary>
 	///		Contextos
 	/// </summary>
-	private List<ContextModel> Contexts { get; } = new();
+	private List<ContextModel> Contexts { get; } = [];
 }

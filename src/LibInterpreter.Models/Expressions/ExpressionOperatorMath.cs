@@ -3,7 +3,7 @@
 /// <summary>
 ///		Expresión para un operador matemático
 /// </summary>
-public class ExpressionOperatorMath : ExpressionOperatorBase
+public class ExpressionOperatorMath(ExpressionOperatorMath.MathType type) : ExpressionOperatorBase
 {
 	/// <summary>
 	///		Tipo de operación
@@ -22,31 +22,20 @@ public class ExpressionOperatorMath : ExpressionOperatorBase
 		Modulus
 	}
 
-	public ExpressionOperatorMath(MathType type)
-	{
-		Type = type;
-	}
-
 	/// <summary>
 	///		Clona la expresión
 	/// </summary>
-	public override ExpressionBase Clone()
-	{
-		return new ExpressionOperatorMath(Type);
-	}
+	public override ExpressionBase Clone() => new ExpressionOperatorMath(Type);
 
 	/// <summary>
 	///		Obtiene la información de depuración
 	/// </summary>
-	public override string GetDebugInfo()
-	{
-		return $"[{Type.ToString()}]";
-	}
+	public override string GetDebugInfo() => $"[{Type.ToString()}]";
 
 	/// <summary>
 	///		Tipo de operación
 	/// </summary>
-	public MathType Type { get; }
+	public MathType Type { get; } = type;
 
 	/// <summary>
 	///		Obtiene la prioridad de la operación
@@ -55,18 +44,12 @@ public class ExpressionOperatorMath : ExpressionOperatorBase
 	{
 		get
 		{
-			switch (Type)
-			{
-				case MathType.Multiply:
-				case MathType.Divide:
-				case MathType.Modulus:
-					return 20;
-				case MathType.Sum:
-				case MathType.Substract:
-					return 19;
-				default:
-					return 0;
-			}
+			return Type switch
+					{
+						MathType.Multiply or MathType.Divide or MathType.Modulus => 20,
+						MathType.Sum or MathType.Substract => 19,
+						_ => 0,
+					};
 		}
 	}
 }
